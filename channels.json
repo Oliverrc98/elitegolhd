@@ -1,22 +1,22 @@
 [
   {
     "name": "DSports",
-    "url": "https://elitegolhd.wuaze.com/proxy.php?url=https://tiogolhd.com/vivo/canal.php?stream=dsports"
+    "url": "https://elitegolhd.wuaze.com/proxy.php?u=https://tiogolhd.com/dsports.m3u8"
   },
   {
     "name": "Liga 1 Max",
-    "url": "https://elitegolhd.wuaze.com/proxy.php?url=https://tiogolhd.com/vivo/canal.php?stream=liga1max"
+    "url": "https://elitegolhd.wuaze.com/proxy.php?u=https://tiogolhd.com/liga1max.m3u8"
   },
   {
     "name": "ESPN",
-    "url": "https://elitegolhd.wuaze.com/proxy.php?url=https://tiogolhd.com/vivo/canal.php?stream=espn"
+    "url": "https://elitegolhd.wuaze.com/proxy.php?u=https://tiogolhd.com/espn.m3u8"
   },
   {
     "name": "Fox Sports",
-    "url": "https://elitegolhd.wuaze.com/proxy.php?url=https://tiogolhd.com/vivo/canal.php?stream=foxsports"
+    "url": "https://elitegolhd.wuaze.com/proxy.php?u=https://tiogolhd.com/foxsports.m3u8"
   },
   {
     "name": "TNT Sports",
-    "url": "https://elitegolhd.wuaze.com/proxy.php?url=https://tiogolhd.com/vivo/canal.php?stream=tntsports"
+    "url": "https://elitegolhd.wuaze.com/proxy.php?u=https://tiogolhd.com/tnt.m3u8"
   }
 ]
