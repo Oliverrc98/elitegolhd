@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EliteGol</title>
+  <script src="//cdn.jsdelivr.net/npm/@clappr/player@0.8/dist/clappr.min.js"></script>
+  <style>
+    body, html {
+      margin:0; padding:0; width:100%; height:100%; background:#000;
+      display:flex; flex-direction:column;
+    }
+    #menu {
+      background:#111; padding:10px; display:flex; gap:10px; overflow-x:auto;
+    }
+    #menu button {
+      background:#222; color:#fff; border:none;
+      padding:8px 12px; cursor:pointer; border-radius:5px;
+    }
+    #menu button:hover { background:#444; }
+    #player { flex:1; }
+  </style>
+</head>
+<body>
+  <div id="menu"></div>
+  <div id="player"></div>
+
+  <script>
+    let player;
+
+    async function loadChannels() {
+      const res = await fetch("channels.json");
+      const channels = await res.json();
+
+      const menu = document.getElementById("menu");
+      channels.forEach(ch => {
+        const btn = document.createElement("button");
+        btn.innerText = ch.name;
+        btn.onclick = () => playChannel(ch.url);
+        menu.appendChild(btn);
+      });
+
+      if (channels.length > 0) playChannel(channels[0].url);
+    }
+
+    function playChannel(url) {
+      if (player) player.destroy();
+      player = new Clappr.Player({
+        source: url,
+        parentId: "#player",
+        autoPlay: true,
+        mute: false,
+        width: "100%",
+        height: "100%",
+        mediacontrol: { seekbar: "#ffcc00", buttons: "#ffffff" },
+        playback: {
+          hlsjsConfig: {
+            maxBufferLength: 30,
+            startLevel: -1,
+            capLevelToPlayerSize: true,
+            maxMaxBufferLength: 60
+          }
+        }
+      });
+
+      player.on(Clappr.Events.PLAYER_PLAY, function() {
+        let hls = player.core.getCurrentPlayback()?._hls;
+        if (hls) {
+          hls.currentLevel = hls.levels.length - 1; // 🔥 fuerza HD
+        }
+      });
+    }
+
+    loadChannels();
+  </script>
+</body>
+</html>
