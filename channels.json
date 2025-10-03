@@ -1,6 +1,10 @@
 [
-  { "name": "DSports", "url": "proxy.php?u=https://tiogolhd.com/vivo/canal.php?stream=dsports" },
-  { "name": "Liga 1 Max", "url": "proxy.php?u=https://tiogolhd.com/vivo/canal.php?stream=liga1max" },
-  { "name": "ESPN", "url": "proxy.php?u=https://tiogolhd.com/vivo/canal.php?stream=espn" },
-  { "name": "Fox Sports", "url": "proxy.php?u=https://tiogolhd.com/vivo/canal.php?stream=foxsports" }
+  {
+    "name": "Deportes TV",
+    "url": "https://example.com/deportes/stream.m3u8"
+  },
+  {
+    "name": "Fútbol Total",
+    "url": "https://test.com/futbol/live.m3u8"
+  }
 ]
