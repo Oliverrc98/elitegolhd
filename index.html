@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TV Streaming Premium</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Roboto', sans-serif; }
@@ -42,10 +43,7 @@ footer { text-align:center; padding:15px; border-top:1px solid #333; margin-top:
 </div>
 
 <div class="player">
-  <video id="videoPlayer" controls autoplay>
-    <source src="" type="video/mp4">
-    Tu navegador no soporta reproducción de video.
-  </video>
+  <video id="videoPlayer" controls autoplay></video>
   <div style="display:flex; align-items:center; gap:10px;">
     <div class="channel-name" id="currentChannel">Selecciona un canal</div>
     <select id="qualitySelector">
@@ -69,45 +67,59 @@ let defaultQuality = 'hd';
 const player = document.getElementById('videoPlayer');
 const currentChannel = document.getElementById('currentChannel');
 const qualitySelector = document.getElementById('qualitySelector');
+let hls = null;
 
 // Detectar velocidad de internet
 async function medirVelocidad() {
   try {
     const testImg = "https://www.w3.org/2008/site/images/logo-w3c-mobile-lg";
     const start = Date.now();
-    await fetch(testImg, {cache: "no-store"});
-    const duration = (Date.now() - start)/1000;
-    // Si tarda más de 0.7s -> lenta -> SD, rápida -> HD
-    return duration > 0.7 ? 'sd' : 'hd';
+    await fetch(testImg, {cache:"no-store"});
+    const duration = (Date.now()-start)/1000;
+    return duration>0.7?'sd':'hd';
   } catch { return 'sd'; }
 }
 
-// Cambiar calidad de forma inteligente
+// Inicializar HLS
+function reproducirHLS(url) {
+  if(hls) {
+    hls.destroy();
+    hls = null;
+  }
+  if(Hls.isSupported()) {
+    hls = new Hls();
+    hls.loadSource(url);
+    hls.attachMedia(player);
+    hls.on(Hls.Events.MANIFEST_PARSED,()=>{ player.play(); });
+  } else if(player.canPlayType('application/vnd.apple.mpegurl')) {
+    player.src = url;
+    player.play();
+  }
+  currentQuality = url===currentChannelData.hd?'hd':'sd';
+}
+
+// Cambiar calidad
 function cambiarCalidad(quality) {
   if(!currentChannelData) return;
-  const prevTime = player.currentTime;
-  player.src = quality==='hd'?currentChannelData.hd:currentChannelData.sd;
-  player.currentTime = prevTime;
-  player.play();
-  currentQuality = quality;
+  const selectedURL = quality==='hd'?currentChannelData.hd:currentChannelData.sd;
+  reproducirHLS(selectedURL);
 }
 
-// Monitoreo periódico para auto HD/SD
+// Monitoreo periódico de velocidad para auto HD/SD
 function monitorVelocidad() {
   setInterval(async ()=>{
-    if(qualitySelector.value!=='auto') return; // solo auto
-    const nuevaCalidad = await medirVelocidad();
-    if(nuevaCalidad!==currentQuality){
-      cambiarCalidad(nuevaCalidad);
-    }
-  }, 10000); // cada 10 segundos
+    if(qualitySelector.value!=='auto') return;
+    const nueva = await medirVelocidad();
+    if(nueva!==currentQuality) cambiarCalidad(nueva);
+  },10000);
 }
 
+// Cargar canales
 async function cargarCanales() {
   defaultQuality = await medirVelocidad();
   try {
-    const response = await fetch('channels.json');
-    const canales = await response.json();
+    const res = await fetch('channels.json');
+    const canales = await res.json();
     const channelList = document.getElementById('channelList');
 
     canales.forEach((canal,index)=>{
@@ -122,32 +134,28 @@ async function cargarCanales() {
       });
       channelList.appendChild(div);
 
-      if(index===0){ // primer canal por defecto
+      if(index===0){
         currentChannelData = canal;
         cambiarCalidad(defaultQuality);
         currentChannel.textContent = canal.name;
       }
     });
 
-    // Cambiar calidad manual
     qualitySelector.addEventListener('change',()=>{
       if(!currentChannelData) return;
       const quality = qualitySelector.value==='auto'?defaultQuality:qualitySelector.value;
       cambiarCalidad(quality);
     });
 
-    // Pantalla completa
     document.getElementById('fullscreenBtn').addEventListener('click',()=>{
       if(player.requestFullscreen) player.requestFullscreen();
       else if(player.webkitRequestFullscreen) player.webkitRequestFullscreen();
       else if(player.msRequestFullscreen) player.msRequestFullscreen();
     });
 
-    monitorVelocidad(); // iniciar monitoreo
+    monitorVelocidad();
 
-  } catch(error){
-    console.error('Error cargando canales:',error);
-  }
+  } catch(err){ console.error(err); }
 }
 
 cargarCanales();
