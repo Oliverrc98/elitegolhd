@@ -1,139 +1,157 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TV Streaming Premium</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Roboto', sans-serif; }
-    body { background:#0f0f0f; color:#fff; }
-    header { background:#1a1a1a; padding:20px 40px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; }
-    header h1 { font-size:1.8rem; color:#ff6f61; }
-    nav a { color:#fff; text-decoration:none; margin-left:20px; font-weight:500; transition:0.3s; }
-    nav a:hover { color:#ff6f61; }
-    .container { display:flex; flex-wrap:wrap; padding:20px 40px; gap:20px; }
-    .channels { flex:1 1 250px; max-width:300px; background:#1a1a1a; padding:20px; border-radius:10px; }
-    .channels h2 { margin-bottom:15px; color:#ff6f61; }
-    .channel { background:#252525; padding:10px; border-radius:8px; margin-bottom:10px; cursor:pointer; transition:0.3s; }
-    .channel:hover { background:#333; }
-    .player { flex:3 1 500px; background:#1a1a1a; padding:20px; border-radius:10px; display:flex; flex-direction:column; align-items:center; }
-    video { width:100%; border-radius:10px; margin-bottom:15px; }
-    .channel-name { font-size:1.2rem; font-weight:700; color:#ff6f61; }
-    footer { text-align:center; padding:15px; border-top:1px solid #333; margin-top:20px; color:#aaa; font-size:0.9rem; }
-    @media(max-width:900px){ .container{ flex-direction:column; padding:20px; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TV Streaming Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Roboto', sans-serif; }
+body { background:#0f0f0f; color:#fff; }
+header { background:#1a1a1a; padding:20px 40px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; }
+header h1 { font-size:1.8rem; color:#ff6f61; }
+nav a { color:#fff; text-decoration:none; margin-left:20px; font-weight:500; transition:0.3s; }
+nav a:hover { color:#ff6f61; }
+.container { display:flex; flex-wrap:wrap; padding:20px 40px; gap:20px; }
+.channels { flex:1 1 250px; max-width:300px; background:#1a1a1a; padding:20px; border-radius:10px; }
+.channels h2 { margin-bottom:15px; color:#ff6f61; }
+.channel { background:#252525; padding:10px; border-radius:8px; margin-bottom:10px; cursor:pointer; transition:0.3s; }
+.channel:hover { background:#333; }
+.player { flex:3 1 500px; background:#1a1a1a; padding:20px; border-radius:10px; display:flex; flex-direction:column; align-items:center; }
+video { width:100%; border-radius:10px; margin-bottom:15px; }
+.channel-name { font-size:1.2rem; font-weight:700; color:#ff6f61; }
+footer { text-align:center; padding:15px; border-top:1px solid #333; margin-top:20px; color:#aaa; font-size:0.9rem; }
+@media(max-width:900px){ .container{ flex-direction:column; padding:20px; } }
+</style>
 </head>
 <body>
-  <header>
-    <h1>TV Premium</h1>
-    <nav>
-      <a href="#">Inicio</a>
-      <a href="#">Canales</a>
-      <a href="#">Contacto</a>
-    </nav>
-  </header>
 
-  <div class="container">
-    <div class="channels">
-      <h2>Canales</h2>
-      <div id="channelList"></div>
-    </div>
+<header>
+<h1>TV Premium</h1>
+<nav>
+  <a href="#">Inicio</a>
+  <a href="#">Canales</a>
+  <a href="#">Contacto</a>
+</nav>
+</header>
 
-    <div class="player">
-      <video id="videoPlayer" controls autoplay>
-        <source src="" type="video/mp4">
-        Tu navegador no soporta reproducción de video.
-      </video>
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div class="channel-name" id="currentChannel">Selecciona un canal</div>
-        <select id="qualitySelector">
-          <option value="auto">Auto</option>
-          <option value="hd">HD</option>
-          <option value="sd">SD</option>
-        </select>
-        <button id="fullscreenBtn">Pantalla Completa</button>
-      </div>
-    </div>
+<div class="container">
+<div class="channels">
+  <h2>Canales</h2>
+  <div id="channelList"></div>
+</div>
+
+<div class="player">
+  <video id="videoPlayer" controls autoplay>
+    <source src="" type="video/mp4">
+    Tu navegador no soporta reproducción de video.
+  </video>
+  <div style="display:flex; align-items:center; gap:10px;">
+    <div class="channel-name" id="currentChannel">Selecciona un canal</div>
+    <select id="qualitySelector">
+      <option value="auto">Auto</option>
+      <option value="hd">HD</option>
+      <option value="sd">SD</option>
+    </select>
+    <button id="fullscreenBtn">Pantalla Completa</button>
   </div>
+</div>
+</div>
 
-  <footer>
-    © 2025 TV Premium. Todos los derechos reservados.
-  </footer>
+<footer>
+© 2025 TV Premium. Todos los derechos reservados.
+</footer>
 
-  <script>
-    let currentChannelData = null;
-    let defaultQuality = 'hd';
+<script>
+let currentChannelData = null;
+let currentQuality = 'hd';
+let defaultQuality = 'hd';
+const player = document.getElementById('videoPlayer');
+const currentChannel = document.getElementById('currentChannel');
+const qualitySelector = document.getElementById('qualitySelector');
 
-    // Función para detectar velocidad de internet
-    async function detectarVelocidad() {
-      try {
-        const image = "https://www.w3.org/2008/site/images/logo-w3c-mobile-lg"; // archivo pequeño
-        const startTime = Date.now();
-        await fetch(image, {cache: "no-store"});
-        const endTime = Date.now();
-        const duration = (endTime - startTime) / 1000; // segundos
-        // Si tarda más de 0.5s asumimos conexión lenta -> SD
-        defaultQuality = duration > 0.5 ? 'sd' : 'hd';
-      } catch (err) {
-        defaultQuality = 'sd';
-      }
+// Detectar velocidad de internet
+async function medirVelocidad() {
+  try {
+    const testImg = "https://www.w3.org/2008/site/images/logo-w3c-mobile-lg";
+    const start = Date.now();
+    await fetch(testImg, {cache: "no-store"});
+    const duration = (Date.now() - start)/1000;
+    // Si tarda más de 0.7s -> lenta -> SD, rápida -> HD
+    return duration > 0.7 ? 'sd' : 'hd';
+  } catch { return 'sd'; }
+}
+
+// Cambiar calidad de forma inteligente
+function cambiarCalidad(quality) {
+  if(!currentChannelData) return;
+  const prevTime = player.currentTime;
+  player.src = quality==='hd'?currentChannelData.hd:currentChannelData.sd;
+  player.currentTime = prevTime;
+  player.play();
+  currentQuality = quality;
+}
+
+// Monitoreo periódico para auto HD/SD
+function monitorVelocidad() {
+  setInterval(async ()=>{
+    if(qualitySelector.value!=='auto') return; // solo auto
+    const nuevaCalidad = await medirVelocidad();
+    if(nuevaCalidad!==currentQuality){
+      cambiarCalidad(nuevaCalidad);
     }
+  }, 10000); // cada 10 segundos
+}
 
-    async function cargarCanales() {
-      await detectarVelocidad();
-      try {
-        const response = await fetch('channels.json');
-        const canales = await response.json();
-        const channelList = document.getElementById('channelList');
-        const player = document.getElementById('videoPlayer');
-        const currentChannel = document.getElementById('currentChannel');
-        const qualitySelector = document.getElementById('qualitySelector');
+async function cargarCanales() {
+  defaultQuality = await medirVelocidad();
+  try {
+    const response = await fetch('channels.json');
+    const canales = await response.json();
+    const channelList = document.getElementById('channelList');
 
-        canales.forEach((canal, index) => {
-          const div = document.createElement('div');
-          div.className = 'channel';
-          div.textContent = canal.name;
-          div.addEventListener('click', () => {
-            currentChannelData = canal;
-            const quality = qualitySelector.value === 'auto' ? defaultQuality : qualitySelector.value;
-            player.src = quality === 'hd' ? canal.hd : canal.sd;
-            player.play();
-            currentChannel.textContent = canal.name;
-          });
-          channelList.appendChild(div);
+    canales.forEach((canal,index)=>{
+      const div = document.createElement('div');
+      div.className = 'channel';
+      div.textContent = canal.name;
+      div.addEventListener('click',()=>{
+        currentChannelData = canal;
+        const quality = qualitySelector.value==='auto'?defaultQuality:qualitySelector.value;
+        cambiarCalidad(quality);
+        currentChannel.textContent = canal.name;
+      });
+      channelList.appendChild(div);
 
-          // Primer canal por defecto
-          if(index === 0){
-            currentChannelData = canal;
-            player.src = defaultQuality === 'hd' ? canal.hd : canal.sd;
-            currentChannel.textContent = canal.name;
-          }
-        });
-
-        // Cambiar calidad manual
-        qualitySelector.addEventListener('change', () => {
-          if (!currentChannelData) return;
-          const quality = qualitySelector.value === 'auto' ? defaultQuality : qualitySelector.value;
-          const currentTime = player.currentTime;
-          player.src = quality === 'hd' ? currentChannelData.hd : currentChannelData.sd;
-          player.currentTime = currentTime;
-          player.play();
-        });
-
-        // Pantalla completa
-        document.getElementById('fullscreenBtn').addEventListener('click', () => {
-          if (player.requestFullscreen) player.requestFullscreen();
-          else if (player.webkitRequestFullscreen) player.webkitRequestFullscreen();
-          else if (player.msRequestFullscreen) player.msRequestFullscreen();
-        });
-
-      } catch (error) {
-        console.error('Error cargando canales:', error);
+      if(index===0){ // primer canal por defecto
+        currentChannelData = canal;
+        cambiarCalidad(defaultQuality);
+        currentChannel.textContent = canal.name;
       }
-    }
+    });
 
-    cargarCanales();
-  </script>
+    // Cambiar calidad manual
+    qualitySelector.addEventListener('change',()=>{
+      if(!currentChannelData) return;
+      const quality = qualitySelector.value==='auto'?defaultQuality:qualitySelector.value;
+      cambiarCalidad(quality);
+    });
+
+    // Pantalla completa
+    document.getElementById('fullscreenBtn').addEventListener('click',()=>{
+      if(player.requestFullscreen) player.requestFullscreen();
+      else if(player.webkitRequestFullscreen) player.webkitRequestFullscreen();
+      else if(player.msRequestFullscreen) player.msRequestFullscreen();
+    });
+
+    monitorVelocidad(); // iniciar monitoreo
+
+  } catch(error){
+    console.error('Error cargando canales:',error);
+  }
+}
+
+cargarCanales();
+</script>
+
 </body>
 </html>
