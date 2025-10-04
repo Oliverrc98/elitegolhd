@@ -1,8 +1,8 @@
 [
   {
     "name": "Canal 1",
-    "hd": "https://tiogolhd.com/vivo/canal.php?stream=dsports",
-    "sd": "https://tiogolhd.com/vivo/canal.php?stream=dsports"
+    "hd": "https://rm8zcvk3.fubohd.com/dsports/mono.m3u8?token=eafb44b5cb714953e20f2c6fd2e1ab99235bdf5f-c3-1759572913-1759554913",
+    "sd": "https://rm8zcvk3.fubohd.com/dsports/mono.m3u8?token=eafb44b5cb714953e20f2c6fd2e1ab99235bdf5f-c3-1759572913-1759554913"
   },
   {
     "name": "Canal 2",
@@ -15,4 +15,5 @@
     "sd": "https://www.w3schools.com/html/movie.mp4"
   }
 ]
+
 
