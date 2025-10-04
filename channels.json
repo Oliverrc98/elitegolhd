@@ -1,22 +1,18 @@
 [
   {
-    "name": "DSports",
-    "url": "https://elitegolhd.wuaze.com/proxy.php?u=https://ejemplo.com/dsports.m3u8"
+    "name": "Canal 1",
+    "url": "https://www.w3schools.com/html/mov_bbb.mp4"
   },
   {
-    "name": "Liga 1 Max",
-    "url": "https://elitegolhd.wuaze.com/proxy.php?u=https://ejemplo.com/liga1max.m3u8"
+    "name": "Canal 2",
+    "url": "https://www.w3schools.com/html/movie.mp4"
   },
   {
-    "name": "ESPN",
-    "url": "https://elitegolhd.wuaze.com/proxy.php?u=https://ejemplo.com/espn.m3u8"
+    "name": "Canal 3",
+    "url": "https://www.w3schools.com/html/mov_bbb.mp4"
   },
   {
-    "name": "Fox Sports",
-    "url": "https://elitegolhd.wuaze.com/proxy.php?u=https://ejemplo.com/foxsports.m3u8"
-  },
-  {
-    "name": "TNT Sports",
-    "url": "https://elitegolhd.wuaze.com/proxy.php?u=https://ejemplo.com/tntsports.m3u8"
+    "name": "Canal 4",
+    "url": "https://www.w3schools.com/html/movie.mp4"
   }
 ]
