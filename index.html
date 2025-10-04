@@ -45,7 +45,15 @@
         <source src="" type="video/mp4">
         Tu navegador no soporta reproducción de video.
       </video>
-      <div class="channel-name" id="currentChannel">Selecciona un canal</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="channel-name" id="currentChannel">Selecciona un canal</div>
+        <select id="qualitySelector">
+          <option value="auto">Auto</option>
+          <option value="hd">HD</option>
+          <option value="sd">SD</option>
+        </select>
+        <button id="fullscreenBtn">Pantalla Completa</button>
+      </div>
     </div>
   </div>
 
@@ -54,32 +62,72 @@
   </footer>
 
   <script>
+    let currentChannelData = null;
+    let defaultQuality = 'hd';
+
+    // Función para detectar velocidad de internet
+    async function detectarVelocidad() {
+      try {
+        const image = "https://www.w3.org/2008/site/images/logo-w3c-mobile-lg"; // archivo pequeño
+        const startTime = Date.now();
+        await fetch(image, {cache: "no-store"});
+        const endTime = Date.now();
+        const duration = (endTime - startTime) / 1000; // segundos
+        // Si tarda más de 0.5s asumimos conexión lenta -> SD
+        defaultQuality = duration > 0.5 ? 'sd' : 'hd';
+      } catch (err) {
+        defaultQuality = 'sd';
+      }
+    }
+
     async function cargarCanales() {
+      await detectarVelocidad();
       try {
         const response = await fetch('channels.json');
         const canales = await response.json();
         const channelList = document.getElementById('channelList');
         const player = document.getElementById('videoPlayer');
         const currentChannel = document.getElementById('currentChannel');
+        const qualitySelector = document.getElementById('qualitySelector');
 
         canales.forEach((canal, index) => {
           const div = document.createElement('div');
           div.className = 'channel';
           div.textContent = canal.name;
           div.addEventListener('click', () => {
-            player.src = canal.url;
+            currentChannelData = canal;
+            const quality = qualitySelector.value === 'auto' ? defaultQuality : qualitySelector.value;
+            player.src = quality === 'hd' ? canal.hd : canal.sd;
             player.play();
             currentChannel.textContent = canal.name;
           });
-
           channelList.appendChild(div);
 
           // Primer canal por defecto
           if(index === 0){
-            player.src = canal.url;
+            currentChannelData = canal;
+            player.src = defaultQuality === 'hd' ? canal.hd : canal.sd;
             currentChannel.textContent = canal.name;
           }
         });
+
+        // Cambiar calidad manual
+        qualitySelector.addEventListener('change', () => {
+          if (!currentChannelData) return;
+          const quality = qualitySelector.value === 'auto' ? defaultQuality : qualitySelector.value;
+          const currentTime = player.currentTime;
+          player.src = quality === 'hd' ? currentChannelData.hd : currentChannelData.sd;
+          player.currentTime = currentTime;
+          player.play();
+        });
+
+        // Pantalla completa
+        document.getElementById('fullscreenBtn').addEventListener('click', () => {
+          if (player.requestFullscreen) player.requestFullscreen();
+          else if (player.webkitRequestFullscreen) player.webkitRequestFullscreen();
+          else if (player.msRequestFullscreen) player.msRequestFullscreen();
+        });
+
       } catch (error) {
         console.error('Error cargando canales:', error);
       }
