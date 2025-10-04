@@ -3,112 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EliteGol</title>
-  <script src="//cdn.jsdelivr.net/npm/@clappr/player@0.8/dist/clappr.min.js"></script>
+  <title>TV Streaming Premium</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0d0d0d;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    header {
-      background: #111;
-      padding: 15px 20px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-      color: #ffcc00;
-      letter-spacing: 2px;
-    }
-
-    #player {
-      flex: 1;
-      background: #000;
-    }
-
-    .channels {
-      background: #1a1a1a;
-      padding: 15px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 15px;
-      overflow-y: auto;
-    }
-
-    .channel-card {
-      background: #222;
-      padding: 10px;
-      border-radius: 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .channel-card:hover {
-      background: #333;
-      transform: scale(1.05);
-    }
-
-    .channel-card img {
-      width: 100%;
-      border-radius: 8px;
-      margin-bottom: 8px;
-    }
-
-    .channel-card span {
-      display: block;
-      font-size: 14px;
-      font-weight: bold;
-      color: #fff;
-    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Roboto', sans-serif; }
+    body { background:#0f0f0f; color:#fff; }
+    header { background:#1a1a1a; padding:20px 40px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; }
+    header h1 { font-size:1.8rem; color:#ff6f61; }
+    nav a { color:#fff; text-decoration:none; margin-left:20px; font-weight:500; transition:0.3s; }
+    nav a:hover { color:#ff6f61; }
+    .container { display:flex; flex-wrap:wrap; padding:20px 40px; gap:20px; }
+    .channels { flex:1 1 250px; max-width:300px; background:#1a1a1a; padding:20px; border-radius:10px; }
+    .channels h2 { margin-bottom:15px; color:#ff6f61; }
+    .channel { background:#252525; padding:10px; border-radius:8px; margin-bottom:10px; cursor:pointer; transition:0.3s; }
+    .channel:hover { background:#333; }
+    .player { flex:3 1 500px; background:#1a1a1a; padding:20px; border-radius:10px; display:flex; flex-direction:column; align-items:center; }
+    video { width:100%; border-radius:10px; margin-bottom:15px; }
+    .channel-name { font-size:1.2rem; font-weight:700; color:#ff6f61; }
+    footer { text-align:center; padding:15px; border-top:1px solid #333; margin-top:20px; color:#aaa; font-size:0.9rem; }
+    @media(max-width:900px){ .container{ flex-direction:column; padding:20px; } }
   </style>
 </head>
 <body>
-  <header>⚽ EliteGol HD</header>
-  <div id="player"></div>
-  <div class="channels" id="channels"></div>
+  <header>
+    <h1>TV Premium</h1>
+    <nav>
+      <a href="#">Inicio</a>
+      <a href="#">Canales</a>
+      <a href="#">Contacto</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="channels">
+      <h2>Canales</h2>
+      <div id="channelList"></div>
+    </div>
+
+    <div class="player">
+      <video id="videoPlayer" controls autoplay>
+        <source src="" type="video/mp4">
+        Tu navegador no soporta reproducción de video.
+      </video>
+      <div class="channel-name" id="currentChannel">Selecciona un canal</div>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 TV Premium. Todos los derechos reservados.
+  </footer>
 
   <script>
-    let player;
+    async function cargarCanales() {
+      try {
+        const response = await fetch('channels.json');
+        const canales = await response.json();
+        const channelList = document.getElementById('channelList');
+        const player = document.getElementById('videoPlayer');
+        const currentChannel = document.getElementById('currentChannel');
 
-    async function loadChannels() {
-      const res = await fetch("channels.json");
-      const channels = await res.json();
-      const container = document.getElementById("channels");
+        canales.forEach((canal, index) => {
+          const div = document.createElement('div');
+          div.className = 'channel';
+          div.textContent = canal.name;
+          div.addEventListener('click', () => {
+            player.src = canal.url;
+            player.play();
+            currentChannel.textContent = canal.name;
+          });
 
-      channels.forEach((ch, i) => {
-        const card = document.createElement("div");
-        card.className = "channel-card";
-        card.innerHTML = `
-          <img src="${ch.logo}" alt="${ch.name}">
-          <span>${ch.name}</span>
-        `;
-        card.onclick = () => playChannel(ch.url);
-        container.appendChild(card);
+          channelList.appendChild(div);
 
-        if (i === 0) playChannel(ch.url); // Cargar el primero por defecto
-      });
+          // Primer canal por defecto
+          if(index === 0){
+            player.src = canal.url;
+            currentChannel.textContent = canal.name;
+          }
+        });
+      } catch (error) {
+        console.error('Error cargando canales:', error);
+      }
     }
 
-    function playChannel(url) {
-      if (player) player.destroy();
-      player = new Clappr.Player({
-        source: url,
-        parentId: "#player",
-        autoPlay: true,
-        mute: false,
-        width: "100%",
-        height: "100%",
-        mediacontrol: { seekbar: "#ffcc00", buttons: "#ffffff" },
-      });
-    }
-
-    loadChannels();
+    cargarCanales();
   </script>
 </body>
 </html>
